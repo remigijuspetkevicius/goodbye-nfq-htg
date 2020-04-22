@@ -5,3 +5,15 @@ const config = {
 };
 
 const slot = new Slot(document.getElementById("slot"), config);
+
+let closeBtn = document.getElementsByClassName("close")[0];
+closeBtn.onclick = function () {
+  modal.style.display = "none";
+};
+
+let modal = document.getElementById("uselessFacts");
+window.onclick = function (event) {
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};

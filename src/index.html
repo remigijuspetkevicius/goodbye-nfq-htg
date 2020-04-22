@@ -13,7 +13,6 @@
   </head>
   <body>
     <div id="slot">
-      <div id="jackpot">Jackpot: <span id="jp">5.555.555</span></div>
       <div id="reels">
         <div class="reel"></div>
         <div class="reel"></div>
@@ -23,10 +22,23 @@
       </div>
       <div id="controls">
         <button type="button" id="spin">SPIN</button>
-        <label>
-          <input type="checkbox" name="autoplay" id="autoplay" />
-          Autoplay
-        </label>
+      </div>
+    </div>
+
+    <div id="uselessFacts" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="goodbye">
+          Let's get in touch
+          <a
+            href="https://www.linkedin.com/in/remigijus-petkevicius-bb030111a/"
+            target="_blank"
+            >My Linkedin profile</a
+          >
+          and see you later &#128526;
+        </p>
+        <p>Congratulations you win! Your prize is random fact</p>
+        <p id="modal-content"></p>
       </div>
     </div>
     <script
