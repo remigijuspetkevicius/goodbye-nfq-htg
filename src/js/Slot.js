@@ -5,10 +5,10 @@ export default class Slot {
   constructor(domElement, config = {}) {
     Symbol.preload();
 
-    this.maxNextWin = 5;
+    this.isWinSpin = false;
+    this.maxNextWin = 3;
     this.currentSpin = 0;
     this.winSpin = this.random(this.maxNextWin);
-    this.firstWin = true;
 
     this.currentSymbols = [
       ["death_star", "death_star", "death_star"],
@@ -33,7 +33,7 @@ export default class Slot {
         new Reel(reelContainer, idx, this.currentSymbols[idx])
     );
 
-    this.spinButton = document.getElementById("spin");
+    this.spinButton = document.getElementById("slot-trigger");
     this.spinButton.addEventListener("click", () => this.spin());
     this.modal = document.getElementById("uselessFacts");
 
@@ -637,7 +637,7 @@ export default class Slot {
   }
 
   debug() {
-    console.log(this.currentSpin, this.winSpin);
+    console.log(this.currentSpin, this.winSpin, this.maxNextWin);
   }
 
   random(end) {
@@ -647,9 +647,14 @@ export default class Slot {
   resetNextWin() {
     this.currentSpin = 0;
     this.winSpin = this.random(this.maxNextWin);
+    this.debug();
   }
 
   spin() {
+    if (this.spinButton.disabled) {
+      return false;
+    }
+
     this.onSpinStart();
 
     return Promise.all(
@@ -662,23 +667,62 @@ export default class Slot {
 
   onSpinStart() {
     this.spinButton.disabled = true;
-    this.currentSymbols = this.nextSymbols;
-    this.win();
 
-    console.log("SPIN START");
+    new Audio("spin.mp3").play();
+
+    this.knobAnimation();
+    this.checkOverSpin();
+
+    this.currentSymbols = this.nextSymbols;
+    this.isWinSpin = this.currentSpin === this.winSpin;
+
+    this.checkWin();
   }
 
   onSpinEnd() {
     this.spinButton.disabled = false;
-
-    console.log("SPIN END");
-    this.debug();
-    this.checkWin();
+    this.setWin();
     this.currentSpin++;
+
+    $("#slot-trigger").removeClass("slot-triggerDisabled");
   }
 
-  win() {
-    if (this.currentSpin === this.winSpin) {
+  knobAnimation() {
+    $(".arm").animate({ top: "45px", height: "2%" });
+    $(".arm .knob").animate({ top: "-40px", height: "60px" });
+    $(".arm-shadow").animate({ top: "40px" }, 380);
+    $(".ring1 .shadow, .ring2 .shadow").animate({ top: "50%", opacity: 1 });
+
+    $("#slot-trigger").addClass("slot-triggerDisabled");
+
+    $("img.slotSpinAnimation").show();
+
+    setTimeout(function () {
+      $(".arm").animate({ top: "-25px", height: "50%", overflow: "visible" });
+      $(".arm .knob").animate({ top: "-40px", height: "60px" });
+      $(".arm-shadow").animate({ top: "39px" });
+      $(".ring1 .shadow, .ring2 .shadow").animate({ top: "auto", opacity: 0 });
+    }, 500);
+  }
+
+  generateWinningTiles() {
+    var winSymbol = Symbol.random();
+    var combinations = [
+      [
+        [Symbol.random(), winSymbol, Symbol.random()],
+        [Symbol.random(), winSymbol, Symbol.random()],
+        [Symbol.random(), winSymbol, Symbol.random()],
+        [Symbol.random(), winSymbol, Symbol.random()],
+        [Symbol.random(), winSymbol, Symbol.random()],
+      ],
+    ];
+
+    this.nextSymbols =
+      combinations[Math.floor(Math.random() * combinations.length)];
+  }
+
+  checkWin() {
+    if (this.isWinSpin) {
       this.generateWinningTiles();
     } else {
       this.nextSymbols = [
@@ -691,119 +735,56 @@ export default class Slot {
     }
   }
 
-  generateWinningTiles() {
-    var winSymbol = Symbol.random();
-    var combinations = [
-      [
-        [winSymbol, Symbol.random(), Symbol.random()],
-        [winSymbol, Symbol.random(), Symbol.random()],
-        [winSymbol, Symbol.random(), Symbol.random()],
-        [winSymbol, Symbol.random(), Symbol.random()],
-        [winSymbol, Symbol.random(), Symbol.random()],
-      ],
-      [
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [Symbol.random(), winSymbol, Symbol.random()],
-      ],
-      [
-        [Symbol.random(), Symbol.random(), winSymbol],
-        [Symbol.random(), Symbol.random(), winSymbol],
-        [Symbol.random(), Symbol.random(), winSymbol],
-        [Symbol.random(), Symbol.random(), winSymbol],
-        [Symbol.random(), Symbol.random(), winSymbol],
-      ],
-      [
-        [winSymbol, Symbol.random(), Symbol.random()],
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [Symbol.random(), Symbol.random(), winSymbol],
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [winSymbol, Symbol.random(), Symbol.random()],
-      ],
-      [
-        [Symbol.random(), Symbol.random(), winSymbol],
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [winSymbol, Symbol.random(), Symbol.random()],
-        [Symbol.random(), winSymbol, Symbol.random()],
-        [Symbol.random(), Symbol.random(), winSymbol],
-      ],
-    ];
-
-    this.nextSymbols =
-      combinations[Math.floor(Math.random() * combinations.length)];
-  }
-
-  checkWin() {
-    var win = false;
-
-    var x1 = this.nextSymbols[0][0];
-    var x2 = this.nextSymbols[1][0];
-    var x3 = this.nextSymbols[2][0];
-    var x4 = this.nextSymbols[3][0];
-    var x5 = this.nextSymbols[4][0];
-
+  setWin() {
     var y1 = this.nextSymbols[0][1];
     var y2 = this.nextSymbols[1][1];
     var y3 = this.nextSymbols[2][1];
     var y4 = this.nextSymbols[3][1];
     var y5 = this.nextSymbols[4][1];
 
-    var z1 = this.nextSymbols[0][2];
-    var z2 = this.nextSymbols[1][2];
-    var z3 = this.nextSymbols[2][2];
-    var z4 = this.nextSymbols[3][2];
-    var z5 = this.nextSymbols[4][2];
-
-    // first line win
-    if (x1 === x2 && x1 === x3 && x1 === x4 && x1 === x5) {
-      win = true;
-    }
-
-    // second line win
+    // middle line
     if (y1 === y2 && y1 === y3 && y1 === y4 && y1 === y5) {
-      win = true;
-    }
+      for (var i = 0; i < 5; i++) {
+        this.reels[i].reelContainer.children[0].children[0].classList.add(
+          "blur"
+        );
+        this.reels[i].reelContainer.children[0].children[2].classList.add(
+          "blur"
+        );
+      }
 
-    // third line win
-    if (z1 === z2 && z1 === z3 && z1 === z4 && z1 === z5) {
-      win = true;
-    }
-
-    // cross win
-    if (x1 === y2 && x1 === z3 && x1 === y4 && x1 === x5) {
-      win = true;
-    }
-
-    // cross win
-    if (z1 === y2 && z1 === x3 && z1 === y4 && z1 === z5) {
-      win = true;
-    }
-
-    if (win) {
-      this.displayWin();
       this.resetNextWin();
+      this.displayWin();
+    }
+  }
+
+  checkOverSpin() {
+    if (this.currentSpin > this.winSpin) {
+      this.currentSpin = 0;
     }
   }
 
   displayWin() {
     var modalContent = document.getElementById("modal-content");
-    var goodbye = document.getElementById("goodbye");
-    if (this.firstWin) {
-      this.firstWin = false;
-      goodbye.style.display = "block";
-    } else {
-      goodbye.style.display = "none";
-    }
 
     modalContent.innerHTML = this.facts[
       Math.floor(Math.random() * this.facts.length)
     ];
-    this.openModal();
+
+    new Audio("win.mp3").play();
+    console.log("WIN");
+    // this.modal.style.display = "block";
   }
 
-  openModal() {
-    this.modal.style.display = "block";
+  move(elem) {
+    var left = 0;
+    function frame() {
+      left++; // update parameters
+      elem.style.left = left + "px"; // show frame
+      if (left === 100)
+        // check finish condition
+        clearInterval(id);
+    }
+    var id = setInterval(frame, 10); // draw every 10ms
   }
 }
