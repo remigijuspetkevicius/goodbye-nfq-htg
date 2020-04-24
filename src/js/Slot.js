@@ -46,12 +46,18 @@ export default class Slot {
 
     this.facts = [
       "Average screen time 6 hour per day",
-      "At NFQ/HTG I worked 5 months 99 days and 789 hours",
+      "At NFQ/HTG I worked 5 months",
+      "At NFQ/HTG I worked 99 days",
+      "At NFQ/HTG I worked 789 hours",
       "At NFQ/HTG I have celebrated Christmas and Easter during my work",
       "I did 400 push up by loosing table tennis matches",
       "I have driven around 782 km to work",
       "I have have spent 96 Eur on fuel by driving to work",
-      "I drinked 297 cups of coffee, average cup size 250ml, that's around 74.25 litre's of coffee",
+      "I have drank 297 cups of coffee, average cup size 250ml, that's around 74.25 litre's of coffee",
+      "I have drank 148 litre's of water",
+      "I have attended 7 All Hands Meetings",
+      "I have attended 3 Beer fridays Events",
+      "I mage 134 commits, 5579 new lines and 4162 removed lines",
     ];
 
     this.modalContent.innerHTML = this.facts[
