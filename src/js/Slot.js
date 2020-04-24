@@ -9,6 +9,8 @@ export default class Slot {
     this.maxNextWin = 3;
     this.currentSpin = 0;
     this.winSpin = this.random(this.maxNextWin);
+    this.playSound = new Audio("spin.mp3");
+    this.winSound = new Audio("win.mp3");
 
     this.currentSymbols = [
       ["death_star", "death_star", "death_star"],
@@ -668,7 +670,8 @@ export default class Slot {
   onSpinStart() {
     this.spinButton.disabled = true;
 
-    new Audio("spin.mp3").play();
+    this.playSound.loop = true;
+    this.playSound.play();
 
     this.knobAnimation();
     this.checkOverSpin();
@@ -771,20 +774,10 @@ export default class Slot {
       Math.floor(Math.random() * this.facts.length)
     ];
 
-    new Audio("win.mp3").play();
+    this.playSound.pause();
+    this.winSound.play();
+
     console.log("WIN");
     // this.modal.style.display = "block";
-  }
-
-  move(elem) {
-    var left = 0;
-    function frame() {
-      left++; // update parameters
-      elem.style.left = left + "px"; // show frame
-      if (left === 100)
-        // check finish condition
-        clearInterval(id);
-    }
-    var id = setInterval(frame, 10); // draw every 10ms
   }
 }
