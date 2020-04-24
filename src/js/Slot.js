@@ -90,8 +90,6 @@ export default class Slot {
 
   onSpinStart() {
     this.spinButton.disabled = true;
-
-    this.playSound.loop = true;
     this.playSound.play();
 
     this.knobAnimation();
@@ -193,7 +191,6 @@ export default class Slot {
       Math.floor(Math.random() * this.facts.length)
     ];
 
-    this.playSound.pause();
     this.winSound.play();
 
     console.log("WIN");
