@@ -266,7 +266,8 @@
             {
               key: "onSpinStart",
               value: function () {
-                (this.spinButton.disabled = !0),
+                (this.modal.style.display = "none"),
+                  (this.spinButton.disabled = !0),
                   this.playSound.play(),
                   this.knobAnimation(),
                   this.checkOverSpin(),

@@ -95,6 +95,7 @@ export default class Slot {
   }
 
   onSpinStart() {
+    this.modal.style.display = "none";
     this.spinButton.disabled = true;
     this.playSound.play();
 
